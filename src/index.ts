@@ -1,7 +1,6 @@
 import 'dotenv/config'
 import './db'
 import app from "./app";
-console.log(process.env) // remove this after you've confirmed it is working
 
 const port = process.env.PORT || 3000;
 

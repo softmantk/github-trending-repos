@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  title: GitHub Popularity List API
+  version: "1.0.0"
+  description: API for fetching trending GitHub repositories.
+servers:
+  - url: http://localhost:3000
+paths:
+  /trending-repos:
+    get:
+      summary: Get trending GitHub repositories
+      description: >
+        Retrieves trending repositories based on language and creation date.
+        The `language` query parameter is required.
+      parameters:
+        - in: query
+          name: language
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: createdAt
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: A JSON object containing trending repositories.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrendingRepo'
+        '400':
+          description: Bad Request. Missing or invalid query parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal Server Error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    TrendingRepo:
+      type: object
+      properties:
+        language:
+          type: string
+          description: Language
+        creationDate:
+          type: string
+          format: date-time
+        lastUpdatedAt:
+          type: string
+          format: date-time
+        score:
+          type: number
+          description: Calculated score for trending repositories.
+        frequency:
+          type: number
+        repositories:
+          type: array
+          items:
+            type: object
+      required:
+        - language
+        - creationDate
+        - lastUpdatedAt
+        - score
+        - frequency
+        - repositories
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

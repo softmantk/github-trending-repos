@@ -7,8 +7,10 @@ import githubService from "../../modules/github/github.service";
 import trendingResposService from "../../modules/trendingRepos/trendingRespos.service";
 import {MIN_FREQUENCY_FOR_POPULAR_QUERY, MIN_MINUTES_THRESHOLD_FOR_POPULAR_QUERY} from "../../app.constants";
 
+cron.schedule('*/5 * * * * *', updatePopularQueries)
 
-const updatePopularQueries = async () => {
+
+async function updatePopularQueries() {
     try {
         // const timeLimit = subMinutes(new Date(), MIN_MINUTES_THRESHOLD_FOR_POPULAR_QUERY);
         const timeLimit = subSeconds(new Date(), MIN_MINUTES_THRESHOLD_FOR_POPULAR_QUERY);
@@ -33,4 +35,3 @@ const updatePopularQueries = async () => {
         throw e;
     }
 }
-cron.schedule('*/5 * * * * *', updatePopularQueries)
