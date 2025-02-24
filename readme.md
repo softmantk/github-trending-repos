@@ -30,6 +30,31 @@ There are three modules:
 3. **Score Module:**  
    Calculates the score based on stars, forks, and the recency of updates.
 
+## Flow
+
+1. **Data Ingestion:**  
+   There are two ways data ingesion happens:
+
+   A: When user queries with language & date if data doesnt exist on our trendingRepos collection, we immediately calls github service , then transform, calculate score and update results.
+
+   B. A worker service periodically fetches popular repositories from GitHub, based on frequency of user queries. TrendingRepo has frequency number & last fetched date, if frequency is more than **MIN_FREQUENCY_FOR_POPULAR_QUERY** number  & has not recently updated, worker will run the job.
+
+2. **Score Calculation:**  
+   The Score Module computes a popularity score for each repository based on stars, forks, and recncy. Simple calculation, It has not further developed.
+
+3. **Data Storage:**  
+   The trending repositories and their scores are stored in a MongoDB database using the designed schema. This data is updated periodically to stay current only for popular user queries
+
+4. **API:**  
+   The Trending Repos Module exposes an endpoint (`/trending-repos`) that accepts query parameters (`language`, `createdAt`) to filter the stored data. Project uses open-api-schema validator to validate incoming request.
+
+## How Does performance is Optimised
+
+1. Github public API request are limited. Hence proxied request to expand request limit
+2. Queries are only direcly hit to the github one time, after that result is kept in server database. Subsequent calls are technicaly cached.  After a certain period (CACHE_DURATION_MINUTES) if same request comes again, github api will be called again and updated the cache and respond back to user.
+3. Popular user queries are automatically fetched asynchronously using cron job. If a particular userquery (creation - 2023-01-01, language - javscript) has been hit X number of times already, that query is considered popular query and then the job will periodically update the db in background.
+
+
 ## Trade-offs
 
 1. The initial fetch may take some time.
@@ -44,4 +69,5 @@ There are three modules:
 2. Respect Etag for reducing the api Calculates
 3. Replace Mongodb with redis for better performance
 4. Proper request validation - joi, swagger api could have provided, but beyond the scope.
-5. Provide Pagination. Not done, because we have limited maximum repository items to 1000 
+5. Improve workers popularity logic - Could have improved deciding if a query is poular, less recent queries should be removed after X number of days. We could  create a separate job.
+6. Provide Pagination. Not done, because we have limited maximum repository items to 1000 
