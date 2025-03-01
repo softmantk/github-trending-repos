@@ -23,7 +23,6 @@ const trendingRepoSchema = new Schema<ITrendingRepo>({
         default: []
     },
     frequency: {type: Number, default: 0},
-    score: {type: Number, default: 0},
     lastUpdatedAt: {type: Date, default: Date.now}
 });
 

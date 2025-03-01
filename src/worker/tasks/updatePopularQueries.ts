@@ -24,7 +24,7 @@ async function updatePopularQueries() {
             }
         }).select({repositories: 0}).cursor()
         for await (const record of trendingRecordsCursor) {
-            console.log('@@@ updatePopularQueries:record: ', record.language, record.creationDate);
+            // console.log('@@@ updatePopularQueries:record: ', record.language, record.creationDate);
             count++
             const repositories = await githubService.getRepositoryList(record.language, record.creationDate);
             await trendingResposService.upsertTrendingRepo(record.language, record.creationDate, repositories, false, true)

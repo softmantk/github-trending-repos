@@ -69,4 +69,4 @@ There are three modules:
 2. Respect Etag for reducing the api Calculates
 3. Replace Mongodb with redis for better performance
 4. Improve workers popularity logic - Could have improved deciding if a query is poular, less recent queries should be removed after X number of days. We could  create a separate job.
-5. Provide Pagination. Not done, because we have limited maximum repository items to 1000 
+5. Provide Pagination. Not done, because we have limited maximum repository items to 150 

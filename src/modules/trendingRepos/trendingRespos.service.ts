@@ -5,11 +5,7 @@ import {CACHE_DURATION_MINUTES} from "../../app.constants";
 
 export class TrendingReposService {
 
-    async getRepose(language: string, creationDate: Date) {
-
-        if (!creationDate || !language) {
-            throw new Error('Language and creationDate must be provided.');
-        }
+    async getRepos(language: string, creationDate: Date) {
 
         let trendingRepo: ITrendingRepo | null = await TrendingReposModel.findOne({
             language: language,
@@ -26,10 +22,11 @@ export class TrendingReposService {
                 console.log('Cache expired, refresh data');
                 const repositories = await githubService.getRepositoryList(language, creationDate);
                 trendingRepo = await this.upsertTrendingRepo(language, creationDate, repositories, true, true);
+            } else {
+                const durationInSeconds = differenceInSeconds(new Date(), new Date(trendingRepo.lastUpdatedAt));
+                console.log('cache hit', {duration, CACHE_DURATION_MINUTES, durationInSeconds})
+                this.upsertTrendingRepo(language, creationDate, trendingRepo.repositories, true, false).then()
             }
-            const durationInSeconds = differenceInSeconds(new Date(), new Date(trendingRepo.lastUpdatedAt));
-            console.log('cache hit', {duration, CACHE_DURATION_MINUTES, durationInSeconds})
-            this.upsertTrendingRepo(language, creationDate, trendingRepo.repositories, true, false).then()
         }
         return trendingRepo
     }
@@ -47,7 +44,7 @@ export class TrendingReposService {
             update,
             {upsert: true, new: true, setDefaultsOnInsert: true}
         )
-        await trending.save();
+        // await trending.save(); //unnecessary
         return trending;
     };
 }

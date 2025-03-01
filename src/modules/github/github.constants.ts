@@ -1,0 +1,2 @@
+export const MAX_REPOSITORY_ITEMS = 150;
+export const REPOSITORIES_PER_PAGE = 50;
